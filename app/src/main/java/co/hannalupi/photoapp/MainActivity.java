@@ -1,7 +1,9 @@
 package co.hannalupi.photoapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -11,13 +13,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class MainActivity extends ActionBarActivity {
 
     static final String TAG = "PhotoApp";
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-//    private Uri fileUri;
+    public static final int MEDIA_TYPE_IMAGE = 1;
+    private Uri fileUri;
 
 
     @Override
@@ -35,10 +42,14 @@ public class MainActivity extends ActionBarActivity {
                 Log.i(TAG, "Entered footerView.setOnClickListener()");
 
                 // create Intent to take a picture and return control to the calling application
+
+                //added "android.provider." --> was it needed? if so why?
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-//              fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
-//              intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+                fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
+                Log.v(TAG, fileUri.toString());
+
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
 
                 // start the image capture Intent
                 startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
@@ -51,6 +62,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        super.onActivityResult(requestCode, resultCode, data);
+
         Log.i(TAG,"Entered onActivityResult()");
 
         // Check result code and request code
@@ -61,10 +74,15 @@ public class MainActivity extends ActionBarActivity {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
 
-                Toast.makeText(getApplicationContext(), "Photo Result Returned", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Image saved to:\n" + fileUri, Toast.LENGTH_LONG).show();
 
 //                PhotoItem mPhotoItem = new PhotoItem(data);
 //                mAdapter.add(mPhotoItem);
+            }else if (resultCode == RESULT_CANCELED) {
+
+                Toast.makeText(this, "User Cancelled Image Capture", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Image Capture Failed", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -93,52 +111,46 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    public Uri getOutputMediaFileUri() {
-//        public static final int MEDIA_TYPE_IMAGE = 1;
-//        public static final int MEDIA_TYPE_VIDEO = 2;
-//
-//        /** Create a file Uri for saving an image or video */
-//        private static Uri getOutputMediaFileUri(int type) {
-//
-//            return Uri.fromFile(getOutputMediaFile(type));
-//
-//        }
-//
-//        /**
-//        * Create a File for saving an image or video
-//        */
-//        private static File getOutputMediaFile(int type) {
-//            //TODO : CHECK THAT SDCad is mounted
-//            //To be safe, you should check that the SDCard is mounted
-//            // using Environment.getExternalStorageState() before doing this.
-//
-//            File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-//                Environment.DIRECTORY_PICTURES), "MyCameraApp");
-//            // This location works best if you want the created images to be shared
-//            // between applications and persist after your app has been uninstalled.
-//
-//            // Create the storage directory if it does not exist
-//            if (!mediaStorageDir.exists()) {
-//                if (!mediaStorageDir.mkdirs()) {
-//                    Log.d("MyCameraApp", "failed to create directory");
-//                    return null;
-//                }
-//            }
-//
-//
-//        // Create a media file name
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//        File mediaFile;
-//
-//        if (type == MEDIA_TYPE_IMAGE) {
-//            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-//                    "IMG_" + timeStamp + ".jpg");
-//        }else {
-//            return null;
-//        }
-//
-//        return mediaFile;
-//
-//        }
-//    }
+
+    // Create a file Uri for saving an image or video */
+    private static Uri getOutputMediaFileUri(int type){
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+
+    // Create a File for saving an image or video
+    private static File getOutputMediaFile(int type){
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+
+        Environment.getExternalStorageState();
+
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "PhotoApp");
+        // This location works best if you want the created images to be shared
+        // between applications and persist after your app has been uninstalled.
+
+        // Create the storage directory if it does not exist
+        if (! mediaStorageDir.exists()){
+            if (! mediaStorageDir.mkdirs()){
+                Log.d("PhotoApp", "failed to create directory");
+                return null;
+            }
+        }
+
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File mediaFile;
+
+        if (type == MEDIA_TYPE_IMAGE){
+
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                    "IMG_"+ timeStamp + ".jpg");
+
+        } else {
+            return null;
+        }
+
+        return mediaFile;
+    }
 }

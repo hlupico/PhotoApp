@@ -27,19 +27,30 @@ public class PhotoAdapter extends ArrayAdapter<Photo> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         // Get the data item for this position
         Photo photo = getItem(position);
-        // Check if an existing view is being reused, otherwise inflate the view
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.photo_listview, parent, false);
-        }
-        // Lookup view for data population
-        TextView textView = (TextView) convertView.findViewById(R.id.textView);
-        ImageView photoView = (ImageView) convertView.findViewById(R.id.photoView);
 
+        ViewHolder viewHolder; // view lookup cache stored in tag
+
+        if (convertView == null) {
+
+            viewHolder = new ViewHolder();
+
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            convertView = inflater.inflate(R.layout.photo_listview, parent, false);
+
+            viewHolder.textView = (TextView) convertView.findViewById(R.id.textView);
+            viewHolder.photoView = (ImageView) convertView.findViewById(R.id.photoView);
+
+            convertView.setTag(viewHolder);
+
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
         // Populate the data into the template view using the data object
-        textView.setText(photo.getTimeStamp());
-        photoView.setImageBitmap(photo.getPhotoThumbnail());
+        viewHolder.textView.setText(photo.getTimeStamp());
+        viewHolder.photoView.setImageBitmap(photo.getPhotoThumbnail());
 
         // Return the completed view to render on screen
         return convertView;

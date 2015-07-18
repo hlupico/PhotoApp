@@ -54,7 +54,6 @@ public class MainActivity extends ListActivity {
         getListView().addFooterView(footerView);
         Log.v(TAG, "FooterView Added");
 
-
         //Attach Listener to FooterView
         footerView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,8 +101,10 @@ public class MainActivity extends ListActivity {
             }else if (resultCode == RESULT_CANCELED) {
 
                 Toast.makeText(this, "User Cancelled Image Capture", Toast.LENGTH_LONG).show();
+
             } else {
                 Toast.makeText(this, "Image Capture Failed", Toast.LENGTH_LONG).show();
+
             }
         }
 

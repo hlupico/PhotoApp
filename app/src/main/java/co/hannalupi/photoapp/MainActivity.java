@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,11 +75,31 @@ public class MainActivity extends ListActivity {
             }
         });
 
+        // Attach Listener to items in listview
+
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Photo photoDetail = mAdapter.getPhotoItem(position);
+
+                String photoUri = photoDetail.getPhotoPath();
+
+                Toast.makeText(getApplicationContext(), photoUri, Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(getApplicationContext(), PhotoDetail.class);
+                intent.putExtra("photoFile", photoUri);
+
+
+            }
+        });
+
         // Attach the adapter to a ListView
         setListAdapter(mAdapter);
 
     }
 
+    //MainActivity continued...
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -175,10 +196,6 @@ public class MainActivity extends ListActivity {
         return mediaFile;
     }
 
-    //*******
-    //BELOW IS ADDED FROM GITHUB
-    //*******
-    //
 
     private void getPhotos(List<Photo> photoList) {
 

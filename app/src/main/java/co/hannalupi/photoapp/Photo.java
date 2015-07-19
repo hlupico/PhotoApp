@@ -19,12 +19,13 @@ public class Photo{
 
     public String getTimeStamp() { return timeStamp; }
 
-    public String getphotoPath() {
+    public String getPhotoPath() {
         return photoFilePath;
     }
 
     public Bitmap getPhotoThumbnail() {
         return photoThumbnail;
     }
-    
+
+
 }

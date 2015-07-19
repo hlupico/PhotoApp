@@ -15,6 +15,9 @@ import java.util.ArrayList;
  */
 public class PhotoAdapter extends ArrayAdapter<Photo> {
 
+    private ArrayList<Photo> mPhotoList;
+
+
     // View lookup cache
     private static class ViewHolder {
         TextView textView;
@@ -22,7 +25,15 @@ public class PhotoAdapter extends ArrayAdapter<Photo> {
     }
 
     public PhotoAdapter(Context context, ArrayList<Photo> photo) {
+
         super(context, 0, photo);
+        this.mPhotoList = photo;
+    }
+
+    //Use getPhotoItem in MainActivity to retrieve photo file path
+    public Photo getPhotoItem(int position)
+    {
+        return mPhotoList.get(position);
     }
 
     @Override
@@ -51,6 +62,7 @@ public class PhotoAdapter extends ArrayAdapter<Photo> {
         // Populate the data into the template view using the data object
         viewHolder.textView.setText(photo.getTimeStamp());
         viewHolder.photoView.setImageBitmap(photo.getPhotoThumbnail());
+
 
         // Return the completed view to render on screen
         return convertView;

@@ -40,20 +40,13 @@ public class MainActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         // Create the adapter to convert the array to views
         mAdapter = new PhotoAdapter(this, mPhotoList);
 
-        // Put divider between ToDoItems and FooterView
-        getListView().setFooterDividersEnabled(true);
-        Log.v(TAG, "FooterDividersEnabled");
-
-        // Inflate footerView for footer_view.xml file
-        TextView footerView = (TextView) getLayoutInflater().inflate(R.layout.footer_view, null);
-
-        // Add footerView to ListView
-        getListView().addFooterView(footerView);
-        Log.v(TAG, "FooterView Added");
+        //Reference footerview in layoutfile
+        TextView footerView = (TextView) findViewById(R.id.footerView);
 
         //Attach Listener to FooterView
         footerView.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +59,7 @@ public class MainActivity extends ListActivity {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
                 fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
-                Log.v(TAG, fileUri.toString());
+                Log.v(TAG, "FileUri toString: " + fileUri.toString());
 
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
 
@@ -89,6 +82,8 @@ public class MainActivity extends ListActivity {
 
                 Intent intent = new Intent(getApplicationContext(), PhotoDetail.class);
                 intent.putExtra("photoFile", photoUri);
+
+                startActivity(intent);
 
 
             }
@@ -193,6 +188,8 @@ public class MainActivity extends ListActivity {
             return null;
         }
 
+        Log.v(TAG, "Media File: " + mediaFile.toString());
+
         return mediaFile;
     }
 
@@ -205,6 +202,8 @@ public class MainActivity extends ListActivity {
             photoList.clear();
             Log.i(TAG, "Storage directory exists!!");
             for (File file : mediaStorageDir.listFiles()) {
+
+                Log.v(TAG, "ABSOLUTE FILE PATH: " + file.getAbsolutePath());
 
                 Date date = new Date(file.lastModified());
                 String time = date.toString();

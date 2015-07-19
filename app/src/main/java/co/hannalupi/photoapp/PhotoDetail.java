@@ -1,27 +1,44 @@
 package co.hannalupi.photoapp;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 /**
  * Created by hannalupico on 7/19/15.
  */
 public class PhotoDetail extends Activity {
 
+    final String TAG = "PHOTODETAIL";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.photo_detail);
 
+        ImageView photoDetail = (ImageView) findViewById(R.id.photoDetail);
 
-        TextView photoText = (TextView) findViewById(R.id.photoText);
-        ImageView photoDetail = (ImageView) findViewById(R.id.photoView);
+        Intent newIntent= getIntent();
+        Bundle bundle = newIntent.getExtras();
 
+        if(bundle != null){
+
+            String photoFilePath = (String) bundle.get("photoFile");
+            Log.v(TAG, "photoFilePath to Decode: " + photoFilePath);
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 2;
+            Bitmap bitmap = BitmapFactory.decodeFile(photoFilePath, options);
+
+            photoDetail.setImageBitmap(bitmap);
+
+        }
 
 
     }

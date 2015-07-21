@@ -33,13 +33,12 @@ public class PhotoDetail extends Activity {
             Log.v(TAG, "photoFilePath to Decode: " + photoFilePath);
 
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 2;
+            options.inSampleSize = 3;
             Bitmap bitmap = BitmapFactory.decodeFile(photoFilePath, options);
 
             photoDetail.setImageBitmap(bitmap);
 
         }
-
 
     }
 

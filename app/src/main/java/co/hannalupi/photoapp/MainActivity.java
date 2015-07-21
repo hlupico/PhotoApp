@@ -17,15 +17,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 
 public class MainActivity extends ListActivity {
 
     static final String TAG = "PhotoApp";
+    private static final String PHOTOLIST = "photoList";
     private ArrayList<Photo> mPhotoList = new ArrayList<Photo>();
 
 
@@ -33,6 +34,7 @@ public class MainActivity extends ListActivity {
     public static final int MEDIA_TYPE_IMAGE = 1;
     private static final int THUMB_DIM = 100;
     private Uri fileUri;
+    private File newPhoto;
     private PhotoAdapter mAdapter;
     private static File mediaStorageDir;
 
@@ -41,6 +43,13 @@ public class MainActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.v(TAG, "Entered onCreate");
+
+        //Pass bundle
+        if(savedInstanceState != null){
+            mPhotoList = savedInstanceState.getParcelableArrayList(PHOTOLIST);
+        }
 
         // Create the adapter to convert the array to views
         mAdapter = new PhotoAdapter(this, mPhotoList);
@@ -53,7 +62,7 @@ public class MainActivity extends ListActivity {
             @Override
             public void onClick(View v) {
 
-                Log.i(TAG, "Entered footerView.setOnClickListener()");
+                Log.v(TAG, "Entered footerView.setOnClickListener()");
 
                 // create Intent to take a picture and return control to the calling application
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -94,8 +103,6 @@ public class MainActivity extends ListActivity {
 
     }
 
-    //MainActivity continued...
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -111,7 +118,6 @@ public class MainActivity extends ListActivity {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
 
-                Toast.makeText(this, "Image saved to:\n" + fileUri, Toast.LENGTH_LONG).show();
                 updatePhotoList();
 
             }else if (resultCode == RESULT_CANCELED) {
@@ -125,6 +131,7 @@ public class MainActivity extends ListActivity {
         }
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -146,6 +153,16 @@ public class MainActivity extends ListActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+
+        Log.v(TAG, "Entered onSaveInstanceState : fileUri = " + fileUri.toString());
+        outState.putParcelableArrayList(PHOTOLIST, mPhotoList);
+
+        super.onSaveInstanceState(outState);
     }
 
 
@@ -194,31 +211,51 @@ public class MainActivity extends ListActivity {
     }
 
 
-    private void getPhotos(List<Photo> photoList) {
+    private void getPhotos(ArrayList<Photo> photoList) {
 
         if (photoList != null && mediaStorageDir.exists()) {
 
-            // For now we are starting from fresh and rebuilding the list.
-            photoList.clear();
-            Log.i(TAG, "Storage directory exists!!");
-            for (File file : mediaStorageDir.listFiles()) {
 
-                Log.v(TAG, "ABSOLUTE FILE PATH: " + file.getAbsolutePath());
+        //TODO - Try to get the last photofile from the directory and
+        //add that file information to photoList
 
-                Date date = new Date(file.lastModified());
-                String time = date.toString();
+        newPhoto = lastFileModified(mediaStorageDir.toString());
 
-                photoList.add(
-                        new Photo(
-                                time
-                                , file.getAbsolutePath()
-                                , getPhotoThumbnail(file.getAbsolutePath())
-                        )
-                );
-            }
+        Log.v(TAG, "FILE PATH TO NEWEST FILE WITHIN DIRECTORY: " + newPhoto.toString());
+
+
+            Date date = new Date(newPhoto.lastModified());
+            String time = date.toString();
+
+            photoList.add(
+                    new Photo(
+                            time
+                            , newPhoto.getAbsolutePath()
+                            , getPhotoThumbnail(newPhoto.getAbsolutePath())
+                    )
+            );
 
         }
     }
+
+    public static File lastFileModified(String dir) {
+        File fl = new File(dir);
+        File[] files = fl.listFiles(new FileFilter() {
+            public boolean accept(File file) {
+                return file.isFile();
+            }
+        });
+        long lastMod = Long.MIN_VALUE;
+        File choice = null;
+        for (File file : files) {
+            if (file.lastModified() > lastMod) {
+                choice = file;
+                lastMod = file.lastModified();
+            }
+        }
+        return choice;
+    }
+
 
     private Bitmap getPhotoThumbnail(String photoPath) {
         Log.i(TAG, "Get Photo Thumbnails");
@@ -239,7 +276,6 @@ public class MainActivity extends ListActivity {
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
 
         return BitmapFactory.decodeFile(photoPath, bmOptions);
     }
@@ -248,6 +284,5 @@ public class MainActivity extends ListActivity {
         getPhotos(mPhotoList);
         mAdapter.notifyDataSetChanged();
     }
-
 
 }

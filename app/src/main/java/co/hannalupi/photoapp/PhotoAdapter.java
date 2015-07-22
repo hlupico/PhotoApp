@@ -11,38 +11,51 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by hannalupico on 7/18/15.
+ * PhotoAdapter answered two questions:
+ *      (1) Which array of information, or Photo Objects in this case,
+ *          needs to be displayed and
+ *      (2) Where should the data be displayed?
+ * The PhotoAdapter binds the information from the photos taken
+ * with the PhotoApp to individual views in the ListView.
  */
+
 public class PhotoAdapter extends ArrayAdapter<Photo> {
 
     private ArrayList<Photo> mPhotoList;
 
+    // Construct the instance of PhotoAdapter which is created in the MainActivity
+    // The ArrayList<Photo> containing the saved Photo objects
+    // is passed to PhotoAdapter to bind the information in ArrayList<Photo> to the listView
+    public PhotoAdapter(Context context, ArrayList<Photo> photo) {
+        super(context, 0, photo);
+        this.mPhotoList = photo;
+    }
 
-    // View lookup cache
+    // A ViewHolder patter will be used to optimize memory resources
+    // By creating a view template -
+    // the adapter can cache views instead of continually fetching new ones
     private static class ViewHolder {
         TextView textView;
         ImageView photoView;
     }
 
-    public PhotoAdapter(Context context, ArrayList<Photo> photo) {
-
-        super(context, 0, photo);
-        this.mPhotoList = photo;
-    }
-
-    //Use getPhotoItem in MainActivity to retrieve photo file path
+    // Get the PhotoItem() at a specific position in the adapter
+    // Use getPhotoItem() in MainActivity to retrieve photo file path
     public Photo getPhotoItem(int position)
     {
         return mPhotoList.get(position);
     }
 
+
+    // Implement the ViewHolder pattern in getView() to optimize memory resources
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        // Get the data item for this position
+        // Get the data item for this position to be rendered
         Photo photo = getItem(position);
 
-        ViewHolder viewHolder; // view lookup cache stored in tag
+        // view lookup cache stored in tag
+        ViewHolder viewHolder;
 
         if (convertView == null) {
 
@@ -59,7 +72,8 @@ public class PhotoAdapter extends ArrayAdapter<Photo> {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        // Populate the data into the template view using the data object
+
+        // Populate the object's data into the template view
         viewHolder.textView.setText(photo.getTimeStamp());
         viewHolder.photoView.setImageBitmap(photo.getPhotoThumbnail());
 
@@ -67,6 +81,5 @@ public class PhotoAdapter extends ArrayAdapter<Photo> {
         // Return the completed view to render on screen
         return convertView;
     }
-
 
 }

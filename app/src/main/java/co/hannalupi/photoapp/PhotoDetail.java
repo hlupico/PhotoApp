@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
 /**
- * Created by hannalupico on 7/19/15.
+ * Displays the full-sized image of an image from the PhotoApp.
+ * When a photo is selected from the ListView,
+ * its file path is passed to PhotoDetail.
  */
 public class PhotoDetail extends Activity {
 
@@ -20,28 +21,41 @@ public class PhotoDetail extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Set the layout for the photo_detail
+        // photo_detail contains an imageView
         setContentView(R.layout.photo_detail);
 
+        // Create ImageView, photoDetail, from layout item in photo_detail
         ImageView photoDetail = (ImageView) findViewById(R.id.photoDetail);
 
+        // Create a newIntent to receive the intent sent by MainActivity
+        // Assign bundle to the extra information, the photoUri, from the intent
         Intent newIntent= getIntent();
         Bundle bundle = newIntent.getExtras();
 
+        // If the intent contains a non-null bundle then proceed
         if(bundle != null){
 
+            // Get the "photoFile" information from the bundle
             String photoFilePath = (String) bundle.get("photoFile");
-            Log.v(TAG, "photoFilePath to Decode: " + photoFilePath);
 
+            // Set options.inSampleSize save memory
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 3;
+
+            // Create a bitmap from the photoFilePath passed to PhotoDetail
+            // taking the BitmapFactory.Options into account
             Bitmap bitmap = BitmapFactory.decodeFile(photoFilePath, options);
 
+            // Apply the bitmap image to the imageView
             photoDetail.setImageBitmap(bitmap);
 
         }
-
     }
 
+
+    /* Default Android methods below */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

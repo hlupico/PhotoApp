@@ -54,9 +54,11 @@ public class PhotoAdapter extends ArrayAdapter<Photo> {
         // Get the data item for this position to be rendered
         Photo photo = getItem(position);
 
-        // view lookup cache stored in tag
+        // viewHolder will hold caches view data
         ViewHolder viewHolder;
 
+        // If convertView is empty create a new view, otherwise reuse a view that
+        // has already been created
         if (convertView == null) {
 
             viewHolder = new ViewHolder();
@@ -73,10 +75,9 @@ public class PhotoAdapter extends ArrayAdapter<Photo> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        // Populate the object's data into the template view
+        // Add data into template view using from the object's
         viewHolder.textView.setText(photo.getTimeStamp());
         viewHolder.photoView.setImageBitmap(photo.getPhotoThumbnail());
-
 
         // Return the completed view to render on screen
         return convertView;

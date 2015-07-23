@@ -182,7 +182,7 @@ public class MainActivity extends ListActivity {
 
     // Create a file Uri for saving an image or video
     // Called when a user 'clicks' the footerView
-    // the file Uri returned to the photo is associated withe
+    // the file Uri returned to the photo is associated with
     // the photo that is to be taken
     private static Uri getOutputMediaFileUri(int type){
         return Uri.fromFile(getOutputMediaFile(type));
